@@ -7,17 +7,23 @@
     <skin id="color4" color="#ACCFCC" />
     <skin id="white" color="white" />
     
-    <content id="background" left="0" top="0" right="0" bottom="0" skin="color1" />
-    <content id="body" left="10" top="10" width="300" height="220" skin="color2" />
-    <content id="sensorBorder" left="15" top="45" width="290" height="180" skin="color3" />
-    <content id="sensorInfo" left="20" top="50" width="280" height="170" skin="white" />
-        
+    <style id="title" font="bold 18px" color="white" align="left,top"/>
+    <style id="sensor" font="18px" color="black" align="left,top"/>
+    
+    
+    <container id="body" left="0" top="0" right="0" bottom="0" skin="color1" active="true">		
+		<label left="0" right="0" top="0" bottom="0" style="title" string="$.text"/>
+	</container>
+	
+
+	<container id="sensorList" left="15" top="45" width="290" height="180" skin="white">
+		<label left="0" right="0" top="0" bottom="0" style="sensor" string="$.text"/>
+	</container>
+    
     <script>
         <![CDATA[
-        	application.add( new background() )
-        	application.add( new body() )
-        	application.add(new sensorBorder() )
-        	application.add( new sensorInfo() )
+        	application.add( new body({text:"List of Lights On"}) );
+        	application.add( new sensorList({text:"Test Sensor 1"}));
         ]]>
     </script>
 </program>
