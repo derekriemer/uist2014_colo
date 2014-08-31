@@ -10,20 +10,43 @@
     <style id="title" font="bold 18px" color="white" align="left,top"/>
     <style id="sensor" font="18px" color="black" align="left,top"/>
     
+    <script>
+    	var numSensor = 1;
+    </script>
+    
     
     <container id="body" left="0" top="0" right="0" bottom="0" skin="color1" active="true">		
-		<label left="0" right="0" top="0" bottom="0" style="title" string="$.text"/>
+		<text left="0" right="0" top="0" bottom="0" style="title" string="$.text"/>
+		<text  left="0" right="0" top="25" bottom="0" style="title" skin="color2" string=""/>
+		<behavior>
+			<method id="onTouchEnded" params="container, x, y, ticks">
+                <![CDATA[
+                   if(numSensor < 9){
+	                   nxtTxt = new Text({left:15, right:0, top:5 + 25 * numSensor, bottom:0}, color2, sensor, "Sensor " + numSensor);
+	                   container.add(nxtTxt);
+	                   numSensor++;  
+	               }
+                ]]>
+            </method>
+		</behavior>
 	</container>
 	
-
+	<!--
 	<container id="sensorList" left="15" top="45" width="290" height="180" skin="white">
 		<label left="0" right="0" top="0" bottom="0" style="sensor" string="$.text"/>
+		<behavior>
+			<method id="onTouchEnded" params="container, x, y, ticks">
+                <![CDATA[
+                   nxtTxt = new Text({left:0, right:0, top:10, bottom:0}, color3, sensor, "Sensor 2");
+                   container.add(nxtTxt);  
+                ]]>
+            </method>
+		</behavior>
 	</container>
-    
+    -->
     <script>
         <![CDATA[
         	application.add( new body({text:"List of Lights On"}) );
-        	application.add( new sensorList({text:"Test Sensor 1"}));
         ]]>
     </script>
 </program>
