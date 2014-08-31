@@ -15,7 +15,7 @@
     </script>
     
     
-    <container id="body" left="0" top="0" right="0" bottom="0" skin="color1" active="true">		
+    <container id="body" left="0" top="0" right="0" bottom="0" skin="color1" active="true">
 		<text left="0" right="0" top="0" bottom="0" style="title" string="$.text"/>
 		<text  left="0" right="0" top="25" bottom="0" style="title" skin="color2" string=""/>
 		<behavior>
@@ -24,7 +24,8 @@
                    if(numSensor < 9){
 	                   nxtTxt = new Text({left:15, right:0, top:5 + 25 * numSensor, bottom:0}, color2, sensor, "Sensor " + numSensor);
 	                   container.add(nxtTxt);
-	                   numSensor++;  
+	                   numSensor++;
+	                   //This is where I will try playing the sounds from at a later time.  
 	               }
                 ]]>
             </method>
