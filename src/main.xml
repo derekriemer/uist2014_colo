@@ -13,7 +13,8 @@
     
     <script>
     	var numSensor = 0;
-    	var nxtTxtList = [];
+    	var txtList = [];
+    	var imgList = [];
     </script>
     
     
@@ -25,14 +26,24 @@
                 <![CDATA[
                    if(numSensor < 8){
 	                   var nxtTxt = new Text({left:15, right:0, top:30 + 25 * numSensor, bottom:0}, color2, sensor, "Light " + (numSensor+1));
-                       nxtTxtList.push(nxtTxt);
+                       txtList.push(nxtTxt);
+                       
                        var lightsOn = new Text({left:180, right:10, top:100, bottom:0}, color2, title2, "" + (numSensor + 1) + " Light(s) On");
+                       
+                       var nxtLight = new Picture({left:70, right:220, top:30 + 25 * numSensor, bottom:190 - 25 * numSensor, height:25, width:25}, "media/sun.jpe");
+                       imgList.push(nxtLight);
+                       
 	                   container.add(nxtTxt);
 	                   container.add(lightsOn);
+	                   container.add(nxtLight);
+	                   
 	                   numSensor++;  
 	               }
 	               else{
-	                  container.remove(nxtTxtList.pop());
+	                  container.remove(txtList[2]);
+	                  imgList[3] = new Picture({left:70, right:220, top:30 + 25 * 3, bottom:190 - 25 * 3, height:25, width:25}, "media/moon.jpeg");
+	                  container.add(imgList[3]);
+	                  container.remove(imgList[2]);
 	                  numSensor--;
 	               }
                 ]]>
