@@ -18,7 +18,7 @@
     </script>
     
     
-    <container id="body" left="0" top="0" right="0" bottom="0" skin="color1" active="true">		
+    <container id="body" left="0" top="0" right="0" bottom="0" skin="color1" active="true">
 		<text left="0" right="0" top="0" bottom="0" style="title" string="$.text"/>
 		<text  left="0" right="0" top="25" bottom="0" style="title" skin="color2" string=""/>
 		<behavior>
@@ -40,10 +40,13 @@
                        imgList.push(nxtLight);
                        
 	                   container.add(nxtTxt);
+
 	                   container.add(lightsOn);
 	                   container.add(nxtLight);
+	                   numSensor++;
 	                   
-	                   numSensor++;  
+	                   //This is where I will try playing the sounds from at a later time.  
+
 	               }
 	               else{
 	                  container.remove(txtList[2]);
