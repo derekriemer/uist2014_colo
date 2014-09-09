@@ -22,8 +22,14 @@
 		<text left="0" right="0" top="0" bottom="0" style="title" string="$.text"/>
 		<text  left="0" right="0" top="25" bottom="0" style="title" skin="color2" string=""/>
 		<behavior>
+			<method id="onCreate" params="container, data"><![CDATA[
+				this.data = data;
+				this.sound = new Sound( mergeURI( application.url, "media/shutter-02.wav" ) );
+				Sound.volume = 1.0;
+			]]></method>	
 			<method id="onTouchEnded" params="container, x, y, ticks">
                 <![CDATA[
+                   this.sound.play();
                    if(numSensor < 8){
 	                   var nxtTxt = new Text({left:15, right:0, top:30 + 25 * numSensor, bottom:0}, color2, sensor, "Light " + (numSensor+1));
                        txtList.push(nxtTxt);
