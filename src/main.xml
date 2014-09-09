@@ -1,8 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <program xmlns="http://www.kinoma.com/kpr/1">
+    
+    <skin id="color1" color="#495241" />
+    <skin id="color2" color="#B8AE9C" />
+    <skin id="color3" color="#8A0917" />
+    <skin id="color4" color="#ACCFCC" />
+    <skin id="white" color="white" />
+    
+    <style id="title" font="bold 18px" color="white" align="left,top"/>
+    <style id="title2" font="bold 22px" color="#8A0917" align="left,top"/>
+    <style id="sensor" font="18px" color="black" align="left,top"/>
+    
+    <script>
+    	var numSensor = 0;
+    	var txtList = [];
+    	var imgList = [];
+    </script>
+    
+    
+    <container id="body" left="0" top="0" right="0" bottom="0" skin="color1" active="true">		
+		<text left="0" right="0" top="0" bottom="0" style="title" string="$.text"/>
+		<text  left="0" right="0" top="25" bottom="0" style="title" skin="color2" string=""/>
+		<behavior>
+			<method id="onCreate" params="container, data"><![CDATA[
+				this.data = data;
+				this.sound = new Sound( mergeURI( application.url, "media/shutter-02.wav" ) );
+				Sound.volume = 1.0;
+			]]></method>	
+			<method id="onTouchEnded" params="container, x, y, ticks">
+                <![CDATA[
+                   this.sound.play();
+                   if(numSensor < 8){
+	                   var nxtTxt = new Text({left:15, right:0, top:30 + 25 * numSensor, bottom:0}, color2, sensor, "Light " + (numSensor+1));
+                       txtList.push(nxtTxt);
+                       
+                       var lightsOn = new Text({left:180, right:10, top:100, bottom:0}, color2, title2, "" + (numSensor + 1) + " Light(s) On");
+                       
+                       var nxtLight = new Picture({left:70, right:220, top:30 + 25 * numSensor, bottom:190 - 25 * numSensor, height:25, width:25}, "media/sun.jpe");
+                       imgList.push(nxtLight);
+                       
+	                   container.add(nxtTxt);
+	                   container.add(lightsOn);
+	                   container.add(nxtLight);
+	                   
+	                   numSensor++;  
+	               }
+	               else{
+	                  container.remove(txtList[2]);
+	                  imgList[3] = new Picture({left:70, right:220, top:30 + 25 * 3, bottom:190 - 25 * 3, height:25, width:25}, "media/moon.jpeg");
+	                  container.add(imgList[3]);
+	                  container.remove(imgList[2]);
+	                  numSensor--;
+	               }
+                ]]>
+            </method>
+		</behavior>
+	</container>
+	
     <script>
         <![CDATA[
-            trace( "Hello, world!\n" );
+        	application.add( new body({text:"List of Lights"}) );
+        	body.add(lightsOn);
         ]]>
     </script>
 </program>
