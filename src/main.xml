@@ -7,9 +7,9 @@
     <skin id="color4" color="#ACCFCC" />
     <skin id="white" color="white" />
     
-    <style id="title" font="bold 18px" color="white" align="left,top"/>
-    <style id="title2" font="bold 22px" color="#8A0917" align="left,top"/>
-    <style id="sensor" font="18px" color="black" align="left,top"/>
+    <style id="title" font="bold 25px" color="white" align="left,top"/>
+    <style id="title2" font="bold 40px" color="#8A0917" align="left,top"/>
+    <style id="sensor" font="25px" color="black" align="left,top"/>
     
     <script>
     	var numSensor = 0;
@@ -17,16 +17,51 @@
     	var imgList = [];
     </script>
     
+	<handler path="/updatePic">
+		<behavior>
+			<method id="onInvoke" params="container, message"><![CDATA[
+				var reading = message.requestObject;
+				var lightNum = 0; //0 for now but this will need to be able to change in order to account for different lights
+				if(reading < 0.5) //arbitrary number for now
+				{
+					imgList[lightNum] = new Picture({left:70, right:220, top:30 + 25 * 3, bottom:190 - 25 * 3, height:25, width:25}, "media/moon.jpeg");
+				}
+				else
+				{
+					imgList[lightNum] = new Picture({left:70, right:220, top:30 + 25 * lightNum, bottom:190 - 25 * lightNum, height:25, width:25}, "media/sun.jre");
+				}
+				application.add(imgList[0]);
+			]]></method>
+		</behavior>
+	</handler> 
     
     <container id="body" left="0" top="0" right="0" bottom="0" skin="color1" active="true">
 		<text left="0" right="0" top="0" bottom="0" style="title" string="$.text"/>
 		<text  left="0" right="0" top="25" bottom="0" style="title" skin="color2" string=""/>
+		
 		<behavior>
+		
+			<method id="onLaunch" params="content"><![CDATA[
+            var message = new MessageWithObject("pins:configure", {
+                lightSensor: {
+                    require: "lightSensor",
+                    type: "A2D",
+                    pins: {
+                    lightSensor1: {pin:51}
+                    }
+                }});
+            application.invoke(message);
+
+            message = new MessageWithObject("pins:/lightSensor/read?repeat=on&callback=/updatePic&interval=750");
+            application.invoke(message);
+			]]></method>
+		
 			<method id="onCreate" params="container, data"><![CDATA[
 				this.data = data;
-				this.sound = new Sound( mergeURI( application.url, "media/shutter-02.wav" ) );
-				Sound.volume = 1.0;
-			]]></method>	
+				this.sound = new Sound( mergeURI( application.url, "media/Shutter-02.wav" ) );
+				Sound.volume = 1000.0;
+			]]></method>
+				
 			<method id="onTouchEnded" params="container, x, y, ticks">
                 <![CDATA[
                    this.sound.play();
@@ -63,7 +98,6 @@
     <script>
         <![CDATA[
         	application.add( new body({text:"List of Lights"}) );
-        	body.add(lightsOn);
         ]]>
     </script>
 </program>
