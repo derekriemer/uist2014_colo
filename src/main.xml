@@ -17,10 +17,9 @@
     	var imgList = [];
     </script>
     
-    <container id="cornerContent" top="0" left="0" bottom="80"
-        right="80">
-        		<text top="10" left="10" bottom="50" right="50"
-                string="corner!">
+    <container id="body" left="81" top="81" right="0" bottom="0" skin="color1" active="true">
+    <container top="0" left="0" bottom="80" right="80">
+        		<text top="10" left="10" bottom="50" right="50" string="corner!">
                 <behavior >
                     <method id="onCreate" params="text, data">
                         <![CDATA[
@@ -36,7 +35,7 @@
                 </behavior>
             </text>
     </container>
-    <container id="body" left="81" top="81" right="0" bottom="0" skin="color1" active="true">
+    
     
 		<text left="0" right="0" top="0" bottom="0" style="title" string="$.text"/>
 		<text  left="0" right="0" top="100" bottom="0" style="title" skin="color2" string=""/>
