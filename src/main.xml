@@ -10,22 +10,41 @@
     <style id="title" font="bold 18px" color="white" align="left,top"/>
     <style id="title2" font="bold 22px" color="#8A0917" align="left,top"/>
     <style id="sensor" font="18px" color="black" align="left,top"/>
-    
+    <style id="cornor" font="18px" color="black" align="right,bottom"/>
     <script>
     	var numSensor = 0;
     	var txtList = [];
     	var imgList = [];
     </script>
     
+    <container id="cornerContent" top="0" left="0" bottom="80"
+        right="80">
+        		<text top="10" left="10" bottom="50" right="50"
+                string="corner!">
+                <behavior >
+                    <method id="onCreate" params="text, data">
+                        <![CDATA[
+                            this.data=data;
+                        ]]>
+                    </method>
+                    <method id="onTouchEnded" params="text">
+                        <![CDATA[
+                            text.string="hey, thanks for pressing me.";
+                        ]]>
+                    </method>
+                
+                </behavior>
+            </text>
+    </container>
+    <container id="body" left="81" top="81" right="0" bottom="0" skin="color1" active="true">
     
-    <container id="body" left="0" top="0" right="0" bottom="0" skin="color1" active="true">		
 		<text left="0" right="0" top="0" bottom="0" style="title" string="$.text"/>
-		<text  left="0" right="0" top="25" bottom="0" style="title" skin="color2" string=""/>
+		<text  left="0" right="0" top="100" bottom="0" style="title" skin="color2" string=""/>
 		<behavior>
 			<method id="onCreate" params="container, data"><![CDATA[
 				this.data = data;
-				this.sound = new Sound( mergeURI( application.url, "media/shutter-02.wav" ) );
-				Sound.volume = 1.0;
+				this.sound = new Sound( mergeURI( application.url, "media/Shutter-02.wav" ) );
+				Sound.volume = 100.0;
 			]]></method>	
 			<method id="onTouchEnded" params="container, x, y, ticks">
                 <![CDATA[
@@ -34,11 +53,11 @@
 	                   var nxtTxt = new Text({left:15, right:0, top:30 + 25 * numSensor, bottom:0}, color2, sensor, "Light " + (numSensor+1));
                        txtList.push(nxtTxt);
                        
-                       var lightsOn = new Text({left:180, right:10, top:100, bottom:0}, color2, title2, "" + (numSensor + 1) + " Light(s) On");
+                       var lightsOn 		= new Text({left:180, right:10, top:100, bottom:0}, color2, title2, "" + (numSensor + 1) + " Light(s) On");
                        
                        var nxtLight = new Picture({left:70, right:220, top:30 + 25 * numSensor, bottom:190 - 25 * numSensor, height:25, width:25}, "media/sun.jpe");
                        imgList.push(nxtLight);
-                       
+                   
 	                   container.add(nxtTxt);
 	                   container.add(lightsOn);
 	                   container.add(nxtLight);
@@ -60,7 +79,6 @@
     <script>
         <![CDATA[
         	application.add( new body({text:"List of Lights"}) );
-        	body.add(lightsOn);
         ]]>
     </script>
 </program>
