@@ -18,21 +18,12 @@
     </script>
     
 	<handler path="/updatePic">
-		<behavior>
-			<method id="onInvoke" params="container, message"><![CDATA[
-				var reading = message.requestObject;
-				var lightNum = 0; //0 for now but this will need to be able to change in order to account for different lights
-				if(reading < 0.5) //arbitrary number for now
-				{
-					imgList[lightNum] = new Picture({left:70, right:220, top:30 + 25 * 3, bottom:190 - 25 * 3, height:25, width:25}, "media/moon.jpeg");
-				}
-				else
-				{
-					imgList[lightNum] = new Picture({left:70, right:220, top:30 + 25 * lightNum, bottom:190 - 25 * lightNum, height:25, width:25}, "media/sun.jre");
-				}
-				application.add(imgList[0]);
-			]]></method>
-		</behavior>
+    	<behavior><![CDATA[
+        	function onInvoke( handler, message ){
+        		var result = message.requestObject;  
+        		application.distribute( "onAnalogValueChanged", result ); 		
+        	}
+        ]]></behavior>
 	</handler> 
     
     <container id="body" left="0" top="0" right="0" bottom="0" skin="color1" active="true">
@@ -40,21 +31,6 @@
 		<text  left="0" right="0" top="25" bottom="0" style="title" skin="color2" string=""/>
 		
 		<behavior>
-		
-			<method id="onLaunch" params="content"><![CDATA[
-            var message = new MessageWithObject("pins:configure", {
-                lightSensor: {
-                    require: "lightSensor",
-                    type: "A2D",
-                    pins: {
-                    lightSensor1: {pin:51}
-                    }
-                }});
-            application.invoke(message);
-
-            message = new MessageWithObject("pins:/lightSensor/read?repeat=on&callback=/updatePic&interval=750");
-            application.invoke(message);
-			]]></method>
 		
 			<method id="onCreate" params="container, data"><![CDATA[
 				this.data = data;
@@ -64,7 +40,7 @@
 				
 			<method id="onTouchEnded" params="container, x, y, ticks">
                 <![CDATA[
-                   this.sound.play();
+                   //this.sound.play();
                    if(numSensor < 8){
 	                   var nxtTxt = new Text({left:15, right:0, top:30 + 25 * numSensor, bottom:0}, color2, sensor, "Light " + (numSensor+1));
                        txtList.push(nxtTxt);
@@ -83,20 +59,47 @@
 	                   //This is where I will try playing the sounds from at a later time.  
 
 	               }
-	               else{
-	                  container.remove(txtList[2]);
-	                  imgList[3] = new Picture({left:70, right:220, top:30 + 25 * 3, bottom:190 - 25 * 3, height:25, width:25}, "media/moon.jpeg");
-	                  container.add(imgList[3]);
-	                  container.remove(imgList[2]);
-	                  numSensor--;
+	               else if(numSensor < 15){
+	                  imgList[numSensor-7] = new Picture({left:70, right:220, top:30 + 25 * (numSensor-7), bottom:190 - 25 * (numSensor-7), height:25, width:25}, "media/moon.jpeg");
+	                  container.add(imgList[numSensor-7]);
+	                  numSensor++;
 	               }
                 ]]>
             </method>
+            
+            <method id="onAnalogValueChanged" params="container, result"><![CDATA[
+            	if(result < 0.4)
+            	{
+            		imgList[0] = new Picture({left:70, right:220, top:30 + 25 * 0, bottom:190 - 25 * 0, height:25, width:25}, "media/sun.jpe");
+            	}
+            	else
+            	{
+            		imgList[0] = new Picture({left:70, right:220, top:30 + 25 * 0, bottom:190 - 25 * 0, height:25, width:25}, "media/moon.jpe");
+            	}
+            	container.add(imgList[0]);
+			]]></method>
+			
 		</behavior>
 	</container>
 	
     <script>
         <![CDATA[
+			application.invoke( new MessageWithObject( "pins:configure", {
+        	lightSensor: {
+                require: "lightSensor",
+                pins: {
+                    analog: { pin: 52 }
+                }
+            }
+       		}));
+			
+			application.invoke( new MessageWithObject( "pins:/lightSensor/read?" + 
+	            serializeQuery( {       
+					repeat: "on",
+					interval: 20,
+					callback: "/updatePic"
+        	} ) ) );
+        
         	application.add( new body({text:"List of Lights"}) );
         ]]>
     </script>

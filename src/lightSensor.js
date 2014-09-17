@@ -1,4 +1,16 @@
 // KPR Script file
 exports.pins = {
-	lightSensor: {type: "A2D" }
+	analog: { type: "A2D" }
 };
+
+exports.configure = function() {
+    this.analog.init();
+}
+
+exports.read = function() {
+    return this.analog.read();
+}
+
+exports.close = function() {
+	this.analog.close();
+}
