@@ -25,17 +25,17 @@
         	}
         ]]></behavior>
 	</handler> 
-    
+	
     <container id="body" left="0" top="0" right="0" bottom="0" skin="color1" active="true">
 		<text left="0" right="0" top="0" bottom="0" style="title" string="$.text"/>
 		<text  left="0" right="0" top="25" bottom="0" style="title" skin="color2" string=""/>
-		<text left="15" right="0" top="30" bottom="0" style="sensor" skin="color2" string="Light Sensor 1: "/>
-		<text left="15" right="0" top="55" bottom="0" style="sensor" skin="color2" string="Light Sensor 2: "/>
 		
 		<behavior>
 		
 			<method id="onCreate" params="container, data"><![CDATA[
 				this.data = data;
+				container.add(new Text({left:5, right:0, top:30, bottom:0}, color2, sensor, "Light Sensor 1: "));
+				container.add(new Text({left:5, right:0, top:65, bottom:0}, color2, sensor, "Light Sensor 2: "));
 			]]></method>
 				
 			<method id="onTouchEnded" params="container, x, y, ticks">
