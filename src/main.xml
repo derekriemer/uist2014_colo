@@ -12,6 +12,8 @@
     <style id="sensor" font="25px" color="black" align="left,top"/>
     
     <script>
+    	var TOTAL_SENSORS = 2;
+    	var sensorNum = 0; //Keeps track of sensor updating
     	var imgList = [];
     </script>
     
@@ -28,6 +30,7 @@
 		<text left="0" right="0" top="0" bottom="0" style="title" string="$.text"/>
 		<text  left="0" right="0" top="25" bottom="0" style="title" skin="color2" string=""/>
 		<text left="15" right="0" top="30" bottom="0" style="sensor" skin="color2" string="Light Sensor 1: "/>
+		<text left="15" right="0" top="55" bottom="0" style="sensor" skin="color2" string="Light Sensor 2: "/>
 		
 		<behavior>
 		
@@ -38,7 +41,12 @@
 			<method id="onTouchEnded" params="container, x, y, ticks">
                 <![CDATA[
 					//Code to read light sensor data
-					application.invoke( new MessageWithObject( "pins:/lightSensor/read?" + 
+					application.invoke( new MessageWithObject( "pins:/lightSensor1/read?" + 
+			            serializeQuery( {       
+							repeat: "off",
+							callback: "/updatePic"
+		        	} ) ) );
+					application.invoke( new MessageWithObject( "pins:/lightSensor2/read?" + 
 			            serializeQuery( {       
 							repeat: "off",
 							callback: "/updatePic"
@@ -50,14 +58,18 @@
             <method id="onAnalogValueChanged" params="container, result"><![CDATA[
             	if(result < 0.5)
             	{
-            		imgList[0] = new Picture({left:70, right:220, top:30 + 25 * 0, bottom:190 - 25 * 0, height:25, width:25}, "media/moon.jpeg");
+            		imgList[sensorNum] = new Picture({left:70, right:220, top:30 + 25 * sensorNum, bottom:190 - 25 * sensorNum, height:25, width:25}, "media/moon.jpeg");
             	}
             	else
             	{
-            		imgList[0] = new Picture({left:70, right:220, top:30 + 25 * 0, bottom:190 - 25 * 0, height:25, width:25}, "media/sun.jpe");
+            		imgList[sensorNum] = new Picture({left:70, right:220, top:30 + 25 * sensorNum, bottom:190 - 25 * sensorNum, height:25, width:25}, "media/sun.jpe");
             	}
-            	container.string=result;
-            	container.add(imgList[0]);
+            	container.add(imgList[sensorNum]);
+            	sensorNum++;
+            	if(sensorNum >= TOTAL_SENSORS)
+            	{
+            		sensorNum = 0;
+            	}
 			]]></method>
 			
 		</behavior>
@@ -66,11 +78,17 @@
     <script>
         <![CDATA[
 			application.invoke( new MessageWithObject( "pins:configure", {
-        	lightSensor: {
+        	lightSensor1: {
                 require: "lightSensor",
                 pins: {
                     analog: { pin: 52 }
                 }
+            },
+            lightSensor2: {
+            	require: "lightSensor",
+            	pins: {
+            		analog: {pin: 55 }
+            	}
             }
        		}));
 			
