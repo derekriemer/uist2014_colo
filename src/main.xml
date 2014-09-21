@@ -12,8 +12,6 @@
     <style id="sensor" font="25px" color="black" align="left,top"/>
     
     <script>
-    	var numSensor = 0;
-    	var txtList = [];
     	var imgList = [];
     </script>
     
@@ -29,53 +27,36 @@
     <container id="body" left="0" top="0" right="0" bottom="0" skin="color1" active="true">
 		<text left="0" right="0" top="0" bottom="0" style="title" string="$.text"/>
 		<text  left="0" right="0" top="25" bottom="0" style="title" skin="color2" string=""/>
+		<text left="15" right="0" top="30" bottom="0" style="sensor" skin="color2" string="Light Sensor 1: "/>
 		
 		<behavior>
 		
 			<method id="onCreate" params="container, data"><![CDATA[
 				this.data = data;
-				this.sound = new Sound( mergeURI( application.url, "media/Shutter-02.wav" ) );
-				Sound.volume = 1000.0;
 			]]></method>
 				
 			<method id="onTouchEnded" params="container, x, y, ticks">
                 <![CDATA[
-                   //this.sound.play();
-                   if(numSensor < 8){
-	                   var nxtTxt = new Text({left:15, right:0, top:30 + 25 * numSensor, bottom:0}, color2, sensor, "Light " + (numSensor+1));
-                       txtList.push(nxtTxt);
-                       
-                       var lightsOn = new Text({left:180, right:10, top:100, bottom:0}, color2, title2, "" + (numSensor + 1) + " Light(s) On");
-                       
-                       var nxtLight = new Picture({left:70, right:220, top:30 + 25 * numSensor, bottom:190 - 25 * numSensor, height:25, width:25}, "media/sun.jpe");
-                       imgList.push(nxtLight);
-                       
-	                   container.add(nxtTxt);
-
-	                   container.add(lightsOn);
-	                   container.add(nxtLight);
-	                   numSensor++;
-	                   
-	                   //This is where I will try playing the sounds from at a later time.  
-
-	               }
-	               else if(numSensor < 15){
-	                  imgList[numSensor-7] = new Picture({left:70, right:220, top:30 + 25 * (numSensor-7), bottom:190 - 25 * (numSensor-7), height:25, width:25}, "media/moon.jpeg");
-	                  container.add(imgList[numSensor-7]);
-	                  numSensor++;
-	               }
+					//Code to read light sensor data
+					application.invoke( new MessageWithObject( "pins:/lightSensor/read?" + 
+			            serializeQuery( {       
+							repeat: "off",
+							callback: "/updatePic"
+		        	} ) ) );
+					//Code to select right sound then play it
                 ]]>
             </method>
             
             <method id="onAnalogValueChanged" params="container, result"><![CDATA[
-            	if(result < 0.4)
+            	if(result < 0.5)
             	{
-            		imgList[0] = new Picture({left:70, right:220, top:30 + 25 * 0, bottom:190 - 25 * 0, height:25, width:25}, "media/sun.jpe");
+            		imgList[0] = new Picture({left:70, right:220, top:30 + 25 * 0, bottom:190 - 25 * 0, height:25, width:25}, "media/moon.jpeg");
             	}
             	else
             	{
-            		imgList[0] = new Picture({left:70, right:220, top:30 + 25 * 0, bottom:190 - 25 * 0, height:25, width:25}, "media/moon.jpe");
+            		imgList[0] = new Picture({left:70, right:220, top:30 + 25 * 0, bottom:190 - 25 * 0, height:25, width:25}, "media/sun.jpe");
             	}
+            	container.string=result;
             	container.add(imgList[0]);
 			]]></method>
 			
@@ -93,12 +74,6 @@
             }
        		}));
 			
-			application.invoke( new MessageWithObject( "pins:/lightSensor/read?" + 
-	            serializeQuery( {       
-					repeat: "on",
-					interval: 20,
-					callback: "/updatePic"
-        	} ) ) );
         
         	application.add( new body({text:"List of Lights"}) );
         ]]>
