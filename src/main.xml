@@ -17,9 +17,9 @@
     	var imgList = [];
     </script>
     
-    <container id="body" left="81" top="81" right="0" bottom="0" skin="color1" active="true">
-    <container top="0" left="0" bottom="80" right="80">
-        		<text top="10" left="10" bottom="50" right="50" string="corner!">
+    <container id="body" left="0" top="0" right="0" bottom="0" skin="color1" active="true">
+    <container top="0" left="0" bottom="80" right="80" skin="color1">
+    		<text top="10" left="10" bottom="50" right="50" string="'corner!'">
                 <behavior >
                     <method id="onCreate" params="text, data">
                         <![CDATA[
@@ -28,7 +28,7 @@
                     </method>
                     <method id="onTouchEnded" params="text">
                         <![CDATA[
-                            text.string="hey, thanks for pressing me.";
+                            text.string="'hey, thanks for pressing me.'";
                         ]]>
                     </method>
                 
@@ -36,6 +36,9 @@
             </text>
     </container>
     
+    <container top="81" left="81" bottom="120" right="120" skin="color1">
+        
+        
     
 		<text left="0" right="0" top="0" bottom="0" style="title" string="$.text"/>
 		<text  left="0" right="0" top="100" bottom="0" style="title" skin="color2" string=""/>
@@ -73,6 +76,7 @@
                 ]]>
             </method>
 		</behavior>
+		</container>
 	</container>
 	
     <script>
