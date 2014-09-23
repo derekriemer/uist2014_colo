@@ -19,21 +19,23 @@
     
     <container id="body" left="0" top="0" right="0" bottom="0" skin="color1" active="true">
     <container top="0" left="0" bottom="80" right="80" skin="color1">
-    		<text top="10" left="10" bottom="50" right="50" string="'corner!'">
+    		<label top="10" left="10" bottom="50" right="50" string="'corner!'">
                 <behavior >
-                    <method id="onCreate" params="text, data">
+                    <method id="onCreate" params="label, data">
                         <![CDATA[
                             this.data=data;
+                            //console.log("onCreate");
                         ]]>
                     </method>
-                    <method id="onTouchEnded" params="text, x, y, ticks">
+                    <method id="onTouchEnded" params="label, id, x, y, ticks">
                         <![CDATA[
-                            text.string="'hey, thanks for pressing me.'";
+                            //console.log("onTouchEnded");
+                           label.prototype.string = "hey, thanks for pressing me.";
                         ]]>
                     </method>
                 
                 </behavior>
-            </text>
+            </label>
     </container>
     
     <container top="81" left="81" bottom="120" right="120" skin="color1">
