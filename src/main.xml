@@ -13,7 +13,7 @@
     
     <script>
     	var numSensor = 0;
-    	var txtList = [];
+    	var imgOn = [false, false];
     	var imgList = [];
     </script>
     
@@ -68,15 +68,28 @@
             </method>
             
             <method id="onAnalogValueChanged" params="container, result"><![CDATA[
-            	if(result < 0.4)
+            	if(result < 0.5)
             	{
-            		imgList[0] = new Picture({left:70, right:220, top:30 + 25 * 0, bottom:190 - 25 * 0, height:25, width:25}, "media/sun.jpe");
+            		if(imgOn[0])
+            		{
+            			container.remove(imgList[0]);
+            			imgOn[0] = false;
+            			imgList[0] = new Picture({left:70, right:220, top:30 + 25 * 0, bottom:190 - 25 * 0, height:25, width:25}, "media/moon.jpeg");
+            			container.add(imgList[0]);
+            		}
             	}
             	else
             	{
-            		imgList[0] = new Picture({left:70, right:220, top:30 + 25 * 0, bottom:190 - 25 * 0, height:25, width:25}, "media/moon.jpe");
+            		if(!imgOn[0])
+            		{
+            			container.remove(imgList[0]);
+            			imgOn[0] = true;
+            			imgList[0] = new Picture({left:70, right:220, top:30 + 25 * 0, bottom:190 - 25 * 0, height:25, width:25}, "media/sun.jpeg");
+            			container.add(imgList[0]);
+            		}
+            		
             	}
-            	container.add(imgList[0]);
+            	
 			]]></method>
 			
 		</behavior>
@@ -96,7 +109,7 @@
 			application.invoke( new MessageWithObject( "pins:/lightSensor/read?" + 
 	            serializeQuery( {       
 					repeat: "on",
-					interval: 20,
+					interval: 1000,
 					callback: "/updatePic"
         	} ) ) );
         
