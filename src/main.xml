@@ -26,7 +26,7 @@
                             this.data=data;
                         ]]>
                     </method>
-                    <method id="onTouchEnded" params="text">
+                    <method id="onTouchEnded" params="text, id, x, y, ticks">
                         <![CDATA[
                             text.string="'hey, thanks for pressing me.'";
                         ]]>
