@@ -27,7 +27,11 @@
                             //console.log("onCreate");
                         ]]>
                     </method>
+<<<<<<< HEAD
                     <method id="onTouchEnded" params="label, id, x, y, ticks">
+=======
+                    <method id="onTouchEnded" params="text, id, x, y, ticks">
+>>>>>>> ui_mod_2
                         <![CDATA[
                             //console.log("onTouchEnded");
                            label.prototype.string = "hey, thanks for pressing me.";
