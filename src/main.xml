@@ -17,6 +17,7 @@
     	var TOTAL_SENSORS = 2;
     	var sensorNum = 0; //Keeps track of sensor updating
     	var imgList = [];
+    	var soundList = [new Sound( mergeURI( application.url, "media/light1.wav" ), new Sound( mergeURI( application.url, "media/light2.wav" ), new Sound( mergeURI( application.url, "media/light12.wav" ), new Sound( mergeURI( application.url, "media/none.wav" ) );
     </script>
     
 	<handler path="/updatePic">
