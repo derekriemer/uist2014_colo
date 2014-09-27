@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <program xmlns="http://www.kinoma.com/kpr/1">
     
-    <skin id="color1" color="#495241" />
-    <skin id="color2" color="#B8AE9C" />
-    <skin id="color3" color="#8A0917" />
-    <skin id="color4" color="#ACCFCC" />
+    <skin id="color1" color="#1F8A70" />
+    <skin id="color2" color="#FD7400" />
+    <skin id="color3" color="#FFE11A" />
+    <skin id="color4" color="#BEDB39" />
     <skin id="white" color="white" />
     
     <style id="title" font="bold 25px" color="white" align="left,top"/>
-    <style id="title2" font="bold 40px" color="#8A0917" align="left,top"/>
+    <style id="title2" font="34px" color="black" align="center,center"/>
     <style id="sensor" font="25px" color="black" align="left,top"/>
     
     <script>
@@ -30,17 +30,64 @@
 	</handler> 
 	
     <container id="body" left="0" top="0" right="0" bottom="0" skin="color1" active="true">
-		<text left="0" right="0" top="0" bottom="0" style="title" string="$.text"/>
-		<text  left="0" right="0" top="25" bottom="0" style="title" skin="color2" string=""/>
+		<text left="15" right="0" top="0" bottom="0" style="title" string="'List of Sensors'"/>
+		<text  left="0" right="0" top="25" bottom="0" style="title" skin="color2" string="' '"/>
+		<text left="175" right="0" top="0" bottom="0" style="title2" skin="color3" string="' '"/>
+		<!-- Button stuff -->
+		<container active="true" top="0" left="175" bottom="80" right="0" skin="color3">
+            <behavior>
+                <method id="onCreate" params="container, data">
+                        <![CDATA[
+                            this.data=data;
+                            
+                            trace("onCreate");
+                            this.state=true;
+                            var text=new Text({top:15, bottom:0, left:0, right:0}, null, title2, "Motion Sensing On");
+                            text.name="la_hello"; //puts it's name in the xml dom, so we can do container.la_hello
+                            container.add(text); 
+
+                            
+                            trace("done");
+	                        ]]>
+                </method>
+                <method id="onTouchEnded" params="container, id, x, y, ticks">
+                        <![CDATA[
+                            trace("onTouchEnded");
+                            this.state= !this.state;
+                            if(this.state)
+                            {
+                                container.remove(container.la_hello);
+                                newText=new Text({top:15, bottom:0, left:0, right:0}, null, title2, "Motion Sensing On");
+                                newText.name="la_hello";
+                                container.add(newText);
+                                var motion_on_sound = new Sound( mergeURI( application.url,  "media/motion_on.wav") );
+
+                                motion_on_sound.play();
+                            }
+                            else
+                            {
+								container.remove(container.la_hello);
+								var motion_off_sound = new Sound( mergeURI( application.url,  "media/motion_off.wav") );
+                                motion_off_sound.play();
+                            
+                                
+                                newText=new Text({top:15, bottom:0, left:0, right:0}, null, title2, "Motion Sensing Off");
+                                newText.name="la_hello";
+                                container.add(newText);
+                            }
+                        ]]>
+                </method>
+            </behavior>
+        </container>
 		
 		<behavior>
 		
 			<method id="onCreate" params="container, data"><![CDATA[
 				this.data = data;
 				//Add Text
-				container.add(new Text({left:10, right:0, top:100, bottom:0}, color2, sensor, "Light Sensor 1"));
-				container.add(new Text({left:10, right:0, top:200, bottom:0}, color2, sensor, "Light Sensor 2"));
-				container.add(new Text({left:175, right:0, top:150, bottom:0}, color2, sensor, "No Light Sensors On"));
+				container.add(new Text({left:15, right:0, top:100, bottom:0}, color2, sensor, "Light Sensor 1"));
+				container.add(new Text({left:15, right:0, top:200, bottom:0}, color2, sensor, "Light Sensor 2"));
+				container.add(new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "No Light Sensors On"));
 				//Add Pictures
 				imgList[0] = new Picture({left:0, right:160, top:30 , bottom:150, height:80, width:100}, "media/moon.jpeg");
 				imgList[1] = new Picture({left:0, right:160, top:130 , bottom:50, height:80, width:100}, "media/moon.jpeg");
