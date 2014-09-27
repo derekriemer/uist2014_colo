@@ -17,7 +17,7 @@
     	var TOTAL_SENSORS = 2;
     	var sensorNum = 0; //Keeps track of sensor updating
     	var imgList = [];
-    	var soundList = [new Sound( mergeURI( application.url, "media/light1.wav" ), new Sound( mergeURI( application.url, "media/light2.wav" ), new Sound( mergeURI( application.url, "media/light12.wav" ), new Sound( mergeURI( application.url, "media/none.wav" ) );
+    	var soundList = [new Sound( mergeURI( application.url, "media/light1.wav" )), new Sound( mergeURI( application.url, "media/light2.wav" )), new Sound( mergeURI( application.url, "media/light12.wav" )), new Sound( mergeURI( application.url, "media/none.wav" ))];
     </script>
     
 	<handler path="/updatePic">
@@ -37,21 +37,29 @@
 		
 			<method id="onCreate" params="container, data"><![CDATA[
 				this.data = data;
-				container.add(new Text({left:5, right:0, top:30, bottom:0}, color2, sensor, "Light Sensor 1: "));
-				container.add(new Text({left:5, right:0, top:65, bottom:0}, color2, sensor, "Light Sensor 2: "));
-				imgList[0] = new Picture({left:70, right:220, top:30 + 25 * 0, bottom:190 - 25 * 0, height:25, width:25}, "media/moon.jpeg");
+				//Add Text
+				container.add(new Text({left:10, right:0, top:100, bottom:0}, color2, sensor, "Light Sensor 1"));
+				container.add(new Text({left:10, right:0, top:200, bottom:0}, color2, sensor, "Light Sensor 2"));
+				container.add(new Text({left:175, right:0, top:150, bottom:0}, color2, sensor, "No Light Sensors On"));
+				//Add Pictures
+				imgList[0] = new Picture({left:0, right:160, top:30 , bottom:150, height:80, width:100}, "media/moon.jpeg");
+				imgList[1] = new Picture({left:0, right:160, top:130 , bottom:50, height:80, width:100}, "media/moon.jpeg");
 				container.add(imgList[0]);
+				container.add(imgList[1]);
+				//Add default sound
+				this.sound = soundList[3];
 			]]></method>
 				
 			<method id="onTouchEnded" params="container, x, y, ticks">
                 <![CDATA[
 					//Code to read light sensor data
-					
+					this.sound.play();
 					//Code to select right sound then play it
                 ]]>
             </method>
             
             <method id="onAnalogValueChanged" params="container, result"><![CDATA[
+            	/*
             	if(result < 0.5)
             	{
             		if(imgOn[0])
@@ -60,6 +68,7 @@
             			imgOn[0] = false;
             			imgList[0] = new Picture({left:70, right:220, top:30 + 25 * 0, bottom:190 - 25 * 0, height:25, width:25}, "media/moon.jpeg");
             			container.add(imgList[0]);
+            			this.sound = soundList[3];
             		}
             	}
             	else
@@ -70,10 +79,11 @@
             			imgOn[0] = true;
             			imgList[0] = new Picture({left:70, right:220, top:30 + 25 * 0, bottom:190 - 25 * 0, height:25, width:25}, "media/sun.jpeg");
             			container.add(imgList[0]);
+            			this.sound = soundList[0];
             		}
             		
             	}
-            	
+            	*/
 			]]></method>
 			
 		</behavior>
@@ -81,6 +91,8 @@
 	
     <script>
         <![CDATA[
+        	//Sensor Stuff
+        	/**
 			application.invoke( new MessageWithObject( "pins:configure", {
         	lightSensor: {
                 require: "lightSensor",
@@ -96,7 +108,7 @@
 					interval: 1000,
 					callback: "/updatePic"
         	} ) ) );
-        
+        	*/
         	application.add( new body({text:"List of Lights"}) );
         ]]>
     </script>
