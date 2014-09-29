@@ -20,10 +20,21 @@
     	var soundList = [new Sound( mergeURI( application.url, "media/1.wav" )), new Sound( mergeURI( application.url, "media/2.wav" )), new Sound( mergeURI( application.url, "media/3.wav" )), new Sound( mergeURI( application.url, "media/4.wav" ))];
     </script>
     
-	<handler path="/updatePic">
+	<handler path="/updatePic1">
     	<behavior><![CDATA[
         	function onInvoke( handler, message ){
-        		var result = message.requestObject;  
+        		var result = [message.requestObject, 0]; 
+        		//var result = [message.requestObject, sensorNum]
+        		application.distribute( "onAnalogValueChanged", result ); 		
+        	}
+        ]]></behavior>
+	</handler> 
+	
+	<handler path="/updatePic2">
+    	<behavior><![CDATA[
+        	function onInvoke( handler, message ){
+        		var result = [message.requestObject, 1]; 
+        		//var result = [message.requestObject, sensorNum]
         		application.distribute( "onAnalogValueChanged", result ); 		
         	}
         ]]></behavior>
@@ -107,39 +118,39 @@
             </method>
             
             <method id="onAnalogValueChanged" params="container, result"><![CDATA[
-            	if(result < 0.1)
-            	{
-            		if(imgOn[0])
-            		{
-            			container.remove(imgList[0]);
-            			imgOn[0] = false;
-            			imgList[0] = new Picture({left:0, right:160, top:30 , bottom:150, height:80, width:100}, "media/moon.jpeg");
-            			container.add(imgList[0]);
-            			this.sound = soundList[3];
-            		}
-            	}
-            	else
-            	{
-            		if(!imgOn[0])
-            		{
-            			container.remove(imgList[0]);
-            			imgOn[0] = true;
-            			imgList[0] = new Picture({left:0, right:160, top:30 , bottom:150, height:80, width:100}, "media/sun.jpe");
-            			container.add(imgList[0]);
-            			this.sound = soundList[0];
-            		}
-            		
-            	}
+	            	if(result < 0.1)
+	            	{
+	            		if(imgOn[result[1]])
+	            		{
+	            			container.remove(imgList[result[1]]);
+	            			imgOn[result[1]] = false;
+	            			imgList[result[1]] = new Picture({left:0, right:160, top:30 + 100*result[1], bottom:150 - 100*result[1], height:80, width:100}, "media/moon.jpeg");
+	            			container.add(imgList[result[1]]);
+	            			this.sound = soundList[3];
+	            		}
+	            	}
+	            	else
+	            	{
+	            		if(!imgOn[result[1]])
+	            		{
+	            			container.remove(imgList[result[1]]);
+	            			imgOn[result[1]] = true;
+	            			imgList[result[1]] = new Picture({left:0, right:160, top:30 + 100*result[1] , bottom:150 - 100*result[1], height:80, width:100}, "media/sun.jpe");
+	            			container.add(imgList[result[1]]);
+	            			this.sound = soundList[0];
+	            		}
+	            		
+	            	}
 			]]></method>
 			
 		</behavior>
 	</container>
-	
     <script>
         <![CDATA[
         	//Sensor Stuff
+        	//Sensor1
 			application.invoke( new MessageWithObject( "pins:configure", {
-        	lightSensor: {
+        	lightSensor1: {
                 require: "lightSensor",
                 pins: {
                     analog: { pin: 52 }
@@ -147,12 +158,33 @@
             }
        		}));
 			
-			application.invoke( new MessageWithObject( "pins:/lightSensor/read?" + 
+			application.invoke( new MessageWithObject( "pins:/lightSensor1/read?" + 
 	            serializeQuery( {       
 					repeat: "on",
 					interval: 1000,
-					callback: "/updatePic"
-        	} ) ) );
+					callback: "/updatePic1",
+					//output: "json",
+					//sensorNum: 0
+        	} ) ), Message.JSON );
+
+			application.invoke( new MessageWithObject( "pins:configure", {
+        	lightSensor2: {
+                require: "lightSensor",
+                pins: {
+                    analog: { pin: 55 }
+                }
+            }
+       		}));
+			
+			application.invoke( new MessageWithObject( "pins:/lightSensor2/read?" + 
+	            serializeQuery( {       
+					repeat: "on",
+					interval: 1000,
+					callback: "/updatePic2",
+					//output: "json",
+					//sensorNum: 1
+        	} ) ), Message.JSON );
+   
         	application.add( new body({text:"List of Lights"}) );
         ]]>
     </script>
