@@ -118,7 +118,7 @@
             </method>
             
             <method id="onAnalogValueChanged" params="container, result"><![CDATA[
-	            	if(result < 0.1)
+	            	if(result[0] < 0.4)
 	            	{
 	            		if(imgOn[result[1]])
 	            		{
@@ -155,6 +155,12 @@
                 pins: {
                     analog: { pin: 52 }
                 }
+            },
+            lightSensor2: {
+                require: "lightSensor",
+                pins: {
+                    analog: { pin: 55 }
+                }
             }
        		}));
 			
@@ -166,15 +172,6 @@
 					//output: "json",
 					//sensorNum: 0
         	} ) ), Message.JSON );
-
-			application.invoke( new MessageWithObject( "pins:configure", {
-        	lightSensor2: {
-                require: "lightSensor",
-                pins: {
-                    analog: { pin: 55 }
-                }
-            }
-       		}));
 			
 			application.invoke( new MessageWithObject( "pins:/lightSensor2/read?" + 
 	            serializeQuery( {       
