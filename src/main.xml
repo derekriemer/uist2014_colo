@@ -17,7 +17,11 @@
     	var TOTAL_SENSORS = 2;
     	var sensorNum = 0; //Keeps track of sensor updating
     	var imgList = [];
-    	var soundList = [new Sound( mergeURI( application.url, "media/1.wav" )), new Sound( mergeURI( application.url, "media/2.wav" )), new Sound( mergeURI( application.url, "media/3.wav" )), new Sound( mergeURI( application.url, "media/4.wav" ))];
+    	var soundList = [new Sound( mergeURI( application.url, "media/1On.wav" )), new Sound( mergeURI( application.url, "media/2On.wav" )), new Sound( mergeURI( application.url, "media/BothOn.wav" )), new Sound( mergeURI( application.url, "media/NoneOn.wav" )), new Sound( mergeURI( application.url, "media/greeting.wav" )) ];
+    	var txtInfoList = [new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "Light Sensor 1 On"), new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "Light Sensor 2 On"), new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "Both Light Sensors On"), new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "No Light Sensors On")];
+    	var lastCondition = 3;
+    	var greetingHasPlayed = false; //Keeps track of whether the greeting has played already
+    	var motionOn = true;
     </script>
     
 	<handler path="/updatePic1">
@@ -39,6 +43,14 @@
         	}
         ]]></behavior>
 	</handler> 
+	<handler path="/greeting">
+		<behavior><![CDATA[
+        	function onInvoke( handler, message ){
+        		var result = [message.requestObject, 2]; 
+        		application.distribute( "onAnalogValueChanged", result ); 		
+        	}
+        ]]></behavior>
+	</handler>
 	
     <container id="body" left="0" top="0" right="0" bottom="0" skin="color1" active="true">
 		<text left="15" right="0" top="0" bottom="0" style="title" string="'List of Sensors'"/>
@@ -74,6 +86,8 @@
                                 var motion_on_sound = new Sound( mergeURI( application.url,  "media/motion_on.wav") );
 
                                 motion_on_sound.play();
+                                
+                                motionOn = true;
                             }
                             else
                             {
@@ -85,6 +99,8 @@
                                 newText=new Text({top:15, bottom:0, left:0, right:0}, null, title2, "Motion Sensing Off");
                                 newText.name="la_hello";
                                 container.add(newText);
+                                
+                                motionOn = false;
                             }
                         ]]>
                 </method>
@@ -98,7 +114,7 @@
 				//Add Text
 				container.add(new Text({left:15, right:0, top:100, bottom:0}, color2, sensor, "Light Sensor 1"));
 				container.add(new Text({left:15, right:0, top:200, bottom:0}, color2, sensor, "Light Sensor 2"));
-				container.add(new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "No Light Sensors On"));
+				container.add(txtInfoList[3]);
 				//Add Pictures
 				imgList[0] = new Picture({left:0, right:160, top:30 , bottom:150, height:80, width:100}, "media/moon.jpeg");
 				imgList[1] = new Picture({left:0, right:160, top:130 , bottom:50, height:80, width:100}, "media/moon.jpeg");
@@ -111,14 +127,28 @@
 				
 			<method id="onTouchEnded" params="container, x, y, ticks">
                 <![CDATA[
-					//Code to read light sensor data
 					this.sound.play();
-					//Code to select right sound then play it
                 ]]>
             </method>
             
             <method id="onAnalogValueChanged" params="container, result"><![CDATA[
-	            	if(result[0] < 0.4)
+	            if(motionOn && result[1] == 2 )
+	            {
+	            	if(result[0] < 0.5 && !greetingHasPlayed )
+	            	{
+		            	this.sound = soundList[4];
+		            	this.sound.play();
+		            	greetingHasPlayed = true;
+		            }
+		            else if(result[0] >= 0.5 && gretingHasPlayed)
+		            {
+		            	greetingHasPlayed = false;
+		            }
+		            	
+	            }
+	            else
+	            {	
+	            	if(result[0] < 0.9)
 	            	{
 	            		if(imgOn[result[1]])
 	            		{
@@ -126,7 +156,23 @@
 	            			imgOn[result[1]] = false;
 	            			imgList[result[1]] = new Picture({left:0, right:160, top:30 + 100*result[1], bottom:150 - 100*result[1], height:80, width:100}, "media/moon.jpeg");
 	            			container.add(imgList[result[1]]);
-	            			this.sound = soundList[3];
+	            			container.add(txtInfoList[3]);
+	            			
+	            			
+	            			if(lastPlayed == 3)
+	            			{
+	            				container.remove(txtInfoList[lastPlayed]);
+	            				lastPlayed = (! result[1]);
+	            				this.sound = soundList[lastPlayed];
+	            				container.add(txtInfoList[lastPlayed]);
+	            			}
+	            			else
+	            			{
+	            				container.remove(txtInfoList[lastPlayed]);
+	            				lastPlayed = 4;
+	            				this.sound = soundList[lastPlayed];
+	            				container.add(txtInfoList[lastPlayed]);
+	            			}
 	            		}
 	            	}
 	            	else
@@ -138,9 +184,25 @@
 	            			imgList[result[1]] = new Picture({left:0, right:160, top:30 + 100*result[1] , bottom:150 - 100*result[1], height:80, width:100}, "media/sun.jpe");
 	            			container.add(imgList[result[1]]);
 	            			this.sound = soundList[0];
+	            			
+		          			if(lastPlayed == 0 || lastPlayed == 1)
+	            			{
+	            				container.remove(txtInfoList[lastPlayed]);
+	            				lastPlayed = 3;
+	            				this.sound = soundList[lastPlayed];
+	            				container.add(txtInfoList[lastPlayed]);
+	            			}
+	            			else
+	            			{
+	            				container.remove(txtInfoList[lastPlayed]);
+	            				lastPlayed = result[1];
+	            				this.sound = soundList[lastPlayed];
+	            				container.add(txtInfoList[lastPlayed]);
+	            			}
 	            		}
 	            		
 	            	}
+	            }
 			]]></method>
 			
 		</behavior>
@@ -161,6 +223,12 @@
                 pins: {
                     analog: { pin: 55 }
                 }
+            },
+            motion: {
+            	require: "motion",
+            	pins: {
+            		analog: {pin: 60}
+            	}
             }
        		}));
 			
