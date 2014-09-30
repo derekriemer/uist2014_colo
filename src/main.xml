@@ -114,7 +114,9 @@
 				//Add Text
 				container.add(new Text({left:15, right:0, top:100, bottom:0}, color2, sensor, "Light Sensor 1"));
 				container.add(new Text({left:15, right:0, top:200, bottom:0}, color2, sensor, "Light Sensor 2"));
-				container.add(txtInfoList[3]);
+				var nText = new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "No Light Sensors Are On"); 
+				nText.name = "infoText";
+				container.add(nText);
 				//Add Pictures
 				imgList[0] = new Picture({left:0, right:160, top:30 , bottom:150, height:80, width:100}, "media/moon.jpeg");
 				imgList[1] = new Picture({left:0, right:160, top:130 , bottom:50, height:80, width:100}, "media/moon.jpeg");
@@ -136,11 +138,11 @@
 	            {
 	            	if(result[0] < 0.5 && !greetingHasPlayed )
 	            	{
-		            	this.sound = soundList[4];
+		            	this.sound = new Sound( mergeURI( application.url, "media/greeting.wav" )) ;
 		            	this.sound.play();
 		            	greetingHasPlayed = true;
 		            }
-		            else if(result[0] >= 0.5 && gretingHasPlayed)
+		            else if(result[0] >= 0.5 && greetingHasPlayed)
 		            {
 		            	greetingHasPlayed = false;
 		            }
@@ -156,22 +158,28 @@
 	            			imgOn[result[1]] = false;
 	            			imgList[result[1]] = new Picture({left:0, right:160, top:30 + 100*result[1], bottom:150 - 100*result[1], height:80, width:100}, "media/moon.jpeg");
 	            			container.add(imgList[result[1]]);
-	            			container.add(txtInfoList[3]);
 	            			
-	            			
-	            			if(lastPlayed == 3)
+            				container.remove(container.infoText);
+            				this.sound = new Sound( mergeURI( application.url, "media/NoneOn.wav" ));
+            				var nText = new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "No Light Sensors On"); 
+            				nText.name = "infoText";
+            				container.add(nText);
+
+	            			if(imgOn[0] && !imgOn[1])
 	            			{
-	            				container.remove(txtInfoList[lastPlayed]);
-	            				lastPlayed = (! result[1]);
-	            				this.sound = soundList[lastPlayed];
-	            				container.add(txtInfoList[lastPlayed]);
+	            				container.remove(container.infoText);
+	            				this.sound = new Sound( mergeURI( application.url, "media/1On.wav" ));
+	            				var nText = new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "Light Sensor 1 Is On"); 
+	            				nText.name = "infoText";
+	            				container.add(txtInfoList[nText]);
 	            			}
-	            			else
+            				else if(imgOn[1] && !imgOn[0])
 	            			{
-	            				container.remove(txtInfoList[lastPlayed]);
-	            				lastPlayed = 4;
-	            				this.sound = soundList[lastPlayed];
-	            				container.add(txtInfoList[lastPlayed]);
+	            				container.remove(container.infoText);
+	            				this.sound = new Sound( mergeURI( application.url, "media/2On.wav" ));
+	            				var nText = new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "Light Sensor 2 Is On"); 
+	            				nText.name = "infoText";
+	            				container.add(nText);
 	            			}
 	            		}
 	            	}
@@ -183,22 +191,42 @@
 	            			imgOn[result[1]] = true;
 	            			imgList[result[1]] = new Picture({left:0, right:160, top:30 + 100*result[1] , bottom:150 - 100*result[1], height:80, width:100}, "media/sun.jpe");
 	            			container.add(imgList[result[1]]);
-	            			this.sound = soundList[0];
 	            			
-		          			if(lastPlayed == 0 || lastPlayed == 1)
+	            			
+	            			
+	            			if(imgOn[0] && imgOn[1])
 	            			{
-	            				container.remove(txtInfoList[lastPlayed]);
-	            				lastPlayed = 3;
-	            				this.sound = soundList[lastPlayed];
-	            				container.add(txtInfoList[lastPlayed]);
+	            				container.remove(container.infoText);
+	            				this.sound = new Sound( mergeURI( application.url, "media/BothOn.wav" ));
+	            				var nText = new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "Both Sensors Are On"); 
+	            				nText.name = "infoText";
+	            				container.add(nText);
 	            			}
-	            			else
+	            			else if(imgOn[0] && !imgOn[1])
 	            			{
-	            				container.remove(txtInfoList[lastPlayed]);
-	            				lastPlayed = result[1];
-	            				this.sound = soundList[lastPlayed];
-	            				container.add(txtInfoList[lastPlayed]);
+	            				container.remove(container.infoText);
+	            				this.sound = new Sound( mergeURI( application.url, "media/1On.wav" ));
+	            				var nText = new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "Sensor 1 Is On"); 
+	            				nText.name = "infoText";
+	            				container.add(nText);
 	            			}
+	            			else if(imgOn[1] && !imgOn[0])
+	            			{
+	            				container.remove(container.infoText);
+	            				this.sound = new Sound( mergeURI( application.url, "media/2On.wav" ));
+	            				var nText = new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "Sensor 2 Is On"); 
+	            				nText.name = "infoText";
+	            				container.add(nText);
+	            			}
+	            			else if(!imgOn[0] && !imgOn[1])
+	            			{
+	            				container.remove(container.infoText);
+	        					this.sound = new Sound( mergeURI( application.url, "media/NoneOn.wav" ));
+	            				var nText = new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "No Light Sensors Are On"); 
+	            				nText.name = "infoText";
+	            				container.add(nText);
+	            			}
+	            			
 	            		}
 	            		
 	            	}
@@ -237,8 +265,6 @@
 					repeat: "on",
 					interval: 1000,
 					callback: "/updatePic1",
-					//output: "json",
-					//sensorNum: 0
         	} ) ), Message.JSON );
 			
 			application.invoke( new MessageWithObject( "pins:/lightSensor2/read?" + 
@@ -246,8 +272,12 @@
 					repeat: "on",
 					interval: 1000,
 					callback: "/updatePic2",
-					//output: "json",
-					//sensorNum: 1
+        	} ) ), Message.JSON );
+			application.invoke( new MessageWithObject( "pins:/motion/read?" + 
+	            serializeQuery( {       
+					repeat: "on",
+					interval: 1000,
+					callback: "/greeting",
         	} ) ), Message.JSON );
    
         	application.add( new body({text:"List of Lights"}) );
