@@ -17,11 +17,9 @@
     	var TOTAL_SENSORS = 2;
     	var sensorNum = 0; //Keeps track of sensor updating
     	var imgList = [];
-    	var soundList = [new Sound( mergeURI( application.url, "media/1On.wav" )), new Sound( mergeURI( application.url, "media/2On.wav" )), new Sound( mergeURI( application.url, "media/BothOn.wav" )), new Sound( mergeURI( application.url, "media/NoneOn.wav" )), new Sound( mergeURI( application.url, "media/greeting.wav" )) ];
-    	var txtInfoList = [new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "Light Sensor 1 On"), new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "Light Sensor 2 On"), new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "Both Light Sensors On"), new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "No Light Sensors On")];
     	var lastCondition = 3;
     	var greetingHasPlayed = false; //Keeps track of whether the greeting has played already
-    	var motionOn = true;
+    	var playInstrucs = true;
     </script>
     
 	<handler path="/updatePic1">
@@ -65,7 +63,7 @@
                             
                             trace("onCreate");
                             this.state=true;
-                            var text=new Text({top:15, bottom:0, left:0, right:0}, null, title2, "Motion Sensing On");
+                            var text=new Text({top:15, bottom:0, left:0, right:0}, null, title2, "Instructions On");
                             text.name="la_hello"; //puts it's name in the xml dom, so we can do container.la_hello
                             container.add(text); 
 
@@ -76,31 +74,25 @@
                 <method id="onTouchEnded" params="container, id, x, y, ticks">
                         <![CDATA[
                             trace("onTouchEnded");
-                            this.state= !this.state;
+                            this.state=!this.state
                             if(this.state)
                             {
                                 container.remove(container.la_hello);
-                                newText=new Text({top:15, bottom:0, left:0, right:0}, null, title2, "Motion Sensing On");
+                                newText=new Text({top:15, bottom:0, left:0, right:0}, null, title2, "Instructions On");
                                 newText.name="la_hello";
                                 container.add(newText);
-                                var motion_on_sound = new Sound( mergeURI( application.url,  "media/motion_on.wav") );
-
-                                motion_on_sound.play();
-                                
-                                motionOn = true;
+								this.sound = new Sound( mergeURI( application.url, "media/instructions.wav"));
+								this.sound.play();
+								playInstrucs = true;
                             }
                             else
                             {
-								container.remove(container.la_hello);
-								var motion_off_sound = new Sound( mergeURI( application.url,  "media/motion_off.wav") );
-                                motion_off_sound.play();
-                            
-                                
-                                newText=new Text({top:15, bottom:0, left:0, right:0}, null, title2, "Motion Sensing Off");
+								container.remove(container.la_hello);           
+                                newText=new Text({top:15, bottom:0, left:0, right:0}, null, title2, "Instructions Off");
                                 newText.name="la_hello";
                                 container.add(newText);
-                                
-                                motionOn = false;
+                                //Audio to play Instrucs Off here
+                                playInstrucs = false;
                             }
                         ]]>
                 </method>
@@ -114,7 +106,8 @@
 				//Add Text
 				container.add(new Text({left:15, right:0, top:100, bottom:0}, color2, sensor, "Light Sensor 1"));
 				container.add(new Text({left:15, right:0, top:200, bottom:0}, color2, sensor, "Light Sensor 2"));
-				var nText = new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "No Light Sensors Are On"); 
+				container.add(new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "")); 
+				var nText = new Text({left:175, right:0, top:130, bottom:0}, color4, title2, "No Light Sensors On"); 
 				nText.name = "infoText";
 				container.add(nText);
 				//Add Pictures
@@ -123,114 +116,103 @@
 				container.add(imgList[0]);
 				container.add(imgList[1]);
 				//Add default sound
-				this.sound = soundList[3];
+				this.sound = new Sound( mergeURI( application.url, "media/NoneOn.wav" ))
 				Sound.volume=100;
 			]]></method>
 				
 			<method id="onTouchEnded" params="container, x, y, ticks">
                 <![CDATA[
+					var tempSound = this.sound;
+					if(playInstrucs)
+					{
+						this.sound = new Sound( mergeURI( application.url, "media/instructions.wav")) ;
+					}
 					this.sound.play();
+					this.sound = tempSound;
                 ]]>
             </method>
             
             <method id="onAnalogValueChanged" params="container, result"><![CDATA[
-	            if(motionOn && result[1] == 2 )
-	            {
-	            	if(result[0] < 0.5 && !greetingHasPlayed )
-	            	{
-		            	this.sound = new Sound( mergeURI( application.url, "media/greeting.wav" )) ;
-		            	this.sound.play();
-		            	greetingHasPlayed = true;
-		            }
-		            else if(result[0] >= 0.5 && greetingHasPlayed)
-		            {
-		            	greetingHasPlayed = false;
-		            }
-		            	
-	            }
-	            else
-	            {	
-	            	if(result[0] < 0.9)
-	            	{
-	            		if(imgOn[result[1]])
-	            		{
-	            			container.remove(imgList[result[1]]);
-	            			imgOn[result[1]] = false;
-	            			imgList[result[1]] = new Picture({left:0, right:160, top:30 + 100*result[1], bottom:150 - 100*result[1], height:80, width:100}, "media/moon.jpeg");
-	            			container.add(imgList[result[1]]);
-	            			
+            	if(result[0] < 0.9)
+            	{
+            		if((result[1]==0 || result[1]==1) && imgOn[result[1]])
+            		{
+            			container.remove(imgList[result[1]]);
+            			imgOn[result[1]] = false;
+            			imgList[result[1]] = new Picture({left:0, right:160, top:30 + 100*result[1], bottom:150 - 100*result[1], height:80, width:100}, "media/moon.jpeg");
+            			container.add(imgList[result[1]]);
+            			
+        				container.remove(container.infoText);
+        				this.sound = new Sound( mergeURI( application.url, "media/NoneOn.wav" ));
+        				var nText = new Text({left:175, right:0, top:130, bottom:0}, color4, title2, "No Light Sensors On"); 
+        				nText.name = "infoText";
+        				container.add(nText);
+
+            			if(imgOn[0] && !imgOn[1])
+            			{
             				container.remove(container.infoText);
-            				this.sound = new Sound( mergeURI( application.url, "media/NoneOn.wav" ));
-            				var nText = new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "No Light Sensors On"); 
+            				this.sound = new Sound( mergeURI( application.url, "media/1On.wav" ));
+            				var nText = new Text({left:175, right:0, top:130, bottom:0}, color4, title2, "Light Sensor 1 Is On"); 
+            				nText.name = "infoText";
+            				container.add(nTxt);
+            			}
+        				else if(imgOn[1] && !imgOn[0])
+            			{
+            				container.remove(container.infoText);
+            				this.sound = new Sound( mergeURI( application.url, "media/2On.wav" ));
+            				var nText = new Text({left:175, right:0, top:130, bottom:0}, color4, title2, "Light Sensor 2 Is On"); 
             				nText.name = "infoText";
             				container.add(nText);
-
-	            			if(imgOn[0] && !imgOn[1])
-	            			{
-	            				container.remove(container.infoText);
-	            				this.sound = new Sound( mergeURI( application.url, "media/1On.wav" ));
-	            				var nText = new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "Light Sensor 1 Is On"); 
-	            				nText.name = "infoText";
-	            				container.add(txtInfoList[nText]);
-	            			}
-            				else if(imgOn[1] && !imgOn[0])
-	            			{
-	            				container.remove(container.infoText);
-	            				this.sound = new Sound( mergeURI( application.url, "media/2On.wav" ));
-	            				var nText = new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "Light Sensor 2 Is On"); 
-	            				nText.name = "infoText";
-	            				container.add(nText);
-	            			}
-	            		}
-	            	}
-	            	else
-	            	{
-	            		if(!imgOn[result[1]])
-	            		{
-	            			container.remove(imgList[result[1]]);
-	            			imgOn[result[1]] = true;
-	            			imgList[result[1]] = new Picture({left:0, right:160, top:30 + 100*result[1] , bottom:150 - 100*result[1], height:80, width:100}, "media/sun.jpe");
-	            			container.add(imgList[result[1]]);
-	            			
-	            			
-	            			
-	            			if(imgOn[0] && imgOn[1])
-	            			{
-	            				container.remove(container.infoText);
-	            				this.sound = new Sound( mergeURI( application.url, "media/BothOn.wav" ));
-	            				var nText = new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "Both Sensors Are On"); 
-	            				nText.name = "infoText";
-	            				container.add(nText);
-	            			}
-	            			else if(imgOn[0] && !imgOn[1])
-	            			{
-	            				container.remove(container.infoText);
-	            				this.sound = new Sound( mergeURI( application.url, "media/1On.wav" ));
-	            				var nText = new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "Sensor 1 Is On"); 
-	            				nText.name = "infoText";
-	            				container.add(nText);
-	            			}
-	            			else if(imgOn[1] && !imgOn[0])
-	            			{
-	            				container.remove(container.infoText);
-	            				this.sound = new Sound( mergeURI( application.url, "media/2On.wav" ));
-	            				var nText = new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "Sensor 2 Is On"); 
-	            				nText.name = "infoText";
-	            				container.add(nText);
-	            			}
-	            			else if(!imgOn[0] && !imgOn[1])
-	            			{
-	            				container.remove(container.infoText);
-	        					this.sound = new Sound( mergeURI( application.url, "media/NoneOn.wav" ));
-	            				var nText = new Text({left:175, right:0, top:100, bottom:0}, color4, title2, "No Light Sensors Are On"); 
-	            				nText.name = "infoText";
-	            				container.add(nText);
-	            			}
-	            			
-	            		}
-	            		
-	            	}
-	            }
+            			}
+            		}
+            	}
+            	else
+            	{
+            		if((result[1]==0 || result[1]==1) && !imgOn[result[1]])
+            		{
+            			container.remove(imgList[result[1]]);
+            			imgOn[result[1]] = true;
+            			imgList[result[1]] = new Picture({left:0, right:160, top:30 + 100*result[1] , bottom:150 - 100*result[1], height:80, width:100}, "media/sun.jpe");
+            			container.add(imgList[result[1]]);
+            			
+            			
+            			
+            			if(imgOn[0] && imgOn[1])
+            			{
+            				container.remove(container.infoText);
+            				this.sound = new Sound( mergeURI( application.url, "media/BothOn.wav" ));
+            				var nText = new Text({left:175, right:0, top:130, bottom:0}, color4, title2, "Both Sensors Are On"); 
+            				nText.name = "infoText";
+            				container.add(nText);
+            			}
+            			else if(imgOn[0] && !imgOn[1])
+            			{
+            				container.remove(container.infoText);
+            				this.sound = new Sound( mergeURI( application.url, "media/1On.wav" ));
+            				var nText = new Text({left:175, right:0, top:130, bottom:0}, color4, title2, "Sensor 1 Is On"); 
+            				nText.name = "infoText";
+            				container.add(nText);
+            			}
+            			else if(imgOn[1] && !imgOn[0])
+            			{
+            				container.remove(container.infoText);
+            				this.sound = new Sound( mergeURI( application.url, "media/2On.wav" ));
+            				var nText = new Text({left:175, right:0, top:130, bottom:0}, color4, title2, "Sensor 2 Is On"); 
+            				nText.name = "infoText";
+            				container.add(nText);
+            			}
+            			else if(!imgOn[0] && !imgOn[1])
+            			{
+            				container.remove(container.infoText);
+        					this.sound = new Sound( mergeURI( application.url, "media/NoneOn.wav" ));
+            				var nText = new Text({left:175, right:0, top:130, bottom:0}, color4, title2, "No Light Sensors Are On"); 
+            				nText.name = "infoText";
+            				container.add(nText);
+            			}
+            			
+            		}
+            		
+            	}
 			]]></method>
 			
 		</behavior>
@@ -249,7 +231,7 @@
             lightSensor2: {
                 require: "lightSensor",
                 pins: {
-                    analog: { pin: 55 }
+                    analog: { pin: 57 }
                 }
             },
             motion: {
@@ -273,13 +255,14 @@
 					interval: 1000,
 					callback: "/updatePic2",
         	} ) ), Message.JSON );
+			/*
 			application.invoke( new MessageWithObject( "pins:/motion/read?" + 
 	            serializeQuery( {       
 					repeat: "on",
 					interval: 1000,
 					callback: "/greeting",
         	} ) ), Message.JSON );
-   
+   			*/
         	application.add( new body({text:"List of Lights"}) );
         ]]>
     </script>
