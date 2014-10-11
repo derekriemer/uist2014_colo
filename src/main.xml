@@ -91,7 +91,8 @@
                                 newText=new Text({top:10, bottom:0, left:0, right:0}, null, title2, "Turn Instructions On");
                                 newText.name="la_hello";
                                 container.add(newText);
-                                //Audio to play Instrucs Off here
+                                this.sound = new Sound( mergeURI( application.url, "media/instructionsOff.wav"));
+								this.sound.play();
                                 playInstrucs = false;
                             }
                         ]]>
@@ -134,7 +135,7 @@
             </method>
             
             <method id="onAnalogValueChanged" params="container, result"><![CDATA[
-            	if(result[0] < 0.9)
+            	if((result[1]==0 && result[0] < 0.2) || (result[1]==1 && result[0] < 0.9))
             	{
             		if((result[1]==0 || result[1]==1) && imgOn[result[1]])
             		{
@@ -142,7 +143,7 @@
             			imgOn[result[1]] = false;
             			imgList[result[1]] = new Picture({left:0, right:160, top:30 + 100*result[1], bottom:150 - 100*result[1], height:80, width:100}, "media/moon.jpeg");
             			container.add(imgList[result[1]]);
-            			
+            		
         				container.remove(container.infoText);
         				this.sound = new Sound( mergeURI( application.url, "media/NoneOn.wav" ));
         				var nText = new Text({left:175, right:0, top:145, bottom:0}, color4, title2, "No Light Sensors On"); 
@@ -232,13 +233,13 @@
             lightSensor2: {
                 require: "lightSensor",
                 pins: {
-                    analog: { pin: 57 }
+                    analog: { pin: 60 }
                 }
             },
             motion: {
             	require: "motion",
             	pins: {
-            		analog: {pin: 60}
+            		analog: {pin: 63}
             	}
             }
        		}));
